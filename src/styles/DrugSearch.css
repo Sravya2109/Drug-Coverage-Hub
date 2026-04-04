@@ -1,0 +1,553 @@
+.drug-search-container {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Layout Structure - Header Top First */
+.upload-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f7fa;
+}
+
+.content-wrapper {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.main-shell {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Sidebar and Layout Styles */
+/* Sidebar width: 360px */
+/* Header height: 76px */
+/* Main-content: flex: 1, padding: 20px 28px 26px, background: #edf2f8 */
+
+/* Sidebar styling */
+.sidebar {
+  width: 360px;
+  background: #ffffff;
+  border-right: 1px solid #d5dfeb;
+  overflow-y: auto;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar-top {
+  padding: 24px 20px;
+  border-bottom: 1px solid #dbe4ef;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-logo-img {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.brand-text {
+  font-size: 16px;
+  font-weight: 800;
+  color: #213d68;
+  white-space: normal;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 12px 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #5a6f8f;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.2s ease;
+  text-align: left;
+  font-weight: 500;
+}
+
+.nav-item:hover {
+  background: #f0f4f9;
+  color: #29456f;
+}
+
+.nav-item.active {
+  background: linear-gradient(90deg, #357fdc 0%, #3e8af0 100%);
+  color: #ffffff;
+}
+
+/* Topbar styling */
+.topbar {
+  height: 76px;
+  background: linear-gradient(180deg, #123f79 0%, #1c58ad 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 34px 0 26px;
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(16, 52, 103, 0.14);
+  flex-shrink: 0;
+  width: 100%;
+}
+
+/* Brand in topbar */
+.topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar .brand-logo-img {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+.topbar .brand-text {
+  font-size: 18px;
+  font-weight: 800;
+  color: #ffffff;
+  white-space: nowrap;
+}
+
+.topbar-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.welcome-text {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.icon-btn {
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+/* Main content area */
+.main-content {
+  flex: 1;
+  padding: 20px 28px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  background: #edf2f8;
+  overflow-y: auto;
+}
+
+/* Page header */
+.page-header {
+  padding: 0 0 16px;
+  border-bottom: 1px solid #dbe4ef;
+  margin-bottom: 22px;
+}
+
+.page-header h1 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #213d68;
+}
+
+.page-header p {
+  margin: 0;
+  font-size: 15px;
+  color: #5f7391;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #ffffff;
+  border: 1px solid #d5dfeb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(25, 55, 99, 0.05);
+}
+
+.search-icon {
+  color: #a0aec0;
+  flex-shrink: 0;
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #5a6f8f;
+  background: transparent;
+  font-family: inherit;
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+/* Drug List Dropdown */
+.drug-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  margin-top: 8px;
+  background: #ffffff;
+  border: 1px solid #d5dfeb;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(25, 55, 99, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.drug-item {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #5a6f8f;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: 0.2s ease;
+}
+
+.drug-item:hover {
+  background: #f0f4f9;
+  color: #29456f;
+}
+
+.drug-item.active {
+  background: linear-gradient(90deg, #357fdc 0%, #3e8af0 100%);
+  color: #ffffff;
+}
+
+.drug-item span {
+  text-transform: capitalize;
+}
+
+.no-results {
+  padding: 20px 16px;
+  text-align: center;
+  color: #8a99b1;
+  font-size: 14px;
+}
+
+/* Coverage Results */
+.coverage-results {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.results-header {
+  padding: 16px 0;
+  border-bottom: 2px solid #e6edf6;
+}
+
+.results-header h2 {
+  font-size: 28px;
+  color: #213d68;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+/* Coverage Grid */
+.coverage-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.coverage-card {
+  border-radius: 12px;
+  padding: 20px;
+  background: #ffffff;
+  border: 2px solid #e6edf6;
+}
+
+.coverage-card.covered {
+  border-color: #2f9b71;
+  background: linear-gradient(135deg, #f0fef7 0%, #ffffff 100%);
+}
+
+.coverage-card.not-covered {
+  border-color: #cf5567;
+  background: linear-gradient(135deg, #fef4f5 0%, #ffffff 100%);
+}
+
+.coverage-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.coverage-title h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #29456f;
+  font-weight: 700;
+}
+
+.coverage-card.covered .coverage-icon {
+  color: #2f9b71;
+}
+
+.coverage-card.not-covered .coverage-icon {
+  color: #cf5567;
+}
+
+.insurance-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.insurance-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #5a6f8f;
+}
+
+.covered-item {
+  background: rgba(47, 155, 113, 0.08);
+  color: #2f9b71;
+}
+
+.not-covered-item {
+  background: rgba(207, 85, 103, 0.08);
+  color: #cf5567;
+}
+
+.status-icon {
+  flex-shrink: 0;
+}
+
+.empty-message {
+  margin: 0;
+  color: #8a99b1;
+  font-style: italic;
+  font-size: 13px;
+}
+
+/* Coverage Summary Table */
+.coverage-summary {
+  background: #ffffff;
+  border: 1px solid #e6edf6;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.coverage-summary h3 {
+  margin: 0 0 16px;
+  font-size: 16px;
+  color: #29456f;
+  font-weight: 700;
+}
+
+.summary-table {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e6edf6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  background: #f9fbfe;
+  border-bottom: 1px solid #e6edf6;
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  border-bottom: 1px solid #e6edf6;
+}
+
+.table-row:last-child {
+  border-bottom: none;
+}
+
+.table-cell {
+  padding: 14px 16px;
+  font-size: 14px;
+  color: #5a6f8f;
+}
+
+.table-header .table-cell {
+  color: #607796;
+  font-weight: 700;
+  background: #f9fbfe;
+}
+
+.table-cell.status {
+  display: flex;
+  align-items: center;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.covered-badge {
+  background: #d9f4df;
+  color: #2f9b71;
+}
+
+.not-covered-badge {
+  background: #f8d7dd;
+  color: #cf5567;
+}
+
+/* Initial State */
+.initial-state {
+  text-align: center;
+  padding: 60px 30px;
+  color: #8a99b1;
+}
+
+.initial-icon {
+  color: #a0aec0;
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.initial-state h3 {
+  margin: 16px 0 8px;
+  font-size: 18px;
+  color: #29456f;
+}
+
+.initial-state p {
+  margin: 0;
+  font-size: 14px;
+  color: #8a99b1;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .coverage-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .table-header,
+  .table-row {
+    grid-template-columns: 1fr;
+  }
+
+  .table-cell {
+    padding: 12px 14px;
+  }
+}
+
+@media (max-width: 640px) {
+  .search-box {
+    padding: 10px 12px;
+  }
+
+  .coverage-card {
+    padding: 16px;
+  }
+
+  .coverage-summary {
+    padding: 16px;
+  }
+
+  .summary-table {
+    font-size: 13px;
+  }
+
+  .table-cell {
+    padding: 10px 12px;
+  }
+}
