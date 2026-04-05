@@ -1,4 +1,7 @@
 {
+  "contributors": [
+    "Claude Code (Anthropic)"
+  ],
   "permissions": {
     "allow": [
       "Bash(python3 -m py_compile policy_extractor/config.py policy_extractor/utils/text_utils.py policy_extractor/utils/icd_utils.py policy_extractor/services/section_splitter.py policy_extractor/services/normalizer.py policy_extractor/services/validator.py policy_extractor/main.py)",
@@ -9,14 +12,14 @@
       "Bash(.venv/bin/python -m policy_extractor.main --input \"UHC Botulinum Toxins A and B – Commercial Medical Benefit Drug Policy.pdf\" --output output/uhc_botulinum_v3.json)",
       "Bash(echo \"EXIT: $?\")",
       "Bash(curl -s \"http://localhost:8000/api/v1/search/drug?name=Botox\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f''''  {r[\"\"payer_name\"\"]} | {r[\"\"drug_name\"\"]} | {r[\"\"indication_name\"\"]} | {r[\"\"coverage_status\"\"]} | PA:{r[\"\"pa_required\"\"]}''''\\) for r in d[:5]]; print\\(f''''  ... {len\\(d\\)} total results''''\\)\" __NEW_LINE_91bdc6d72bdf0731__ echo \"\" echo \"=== Indication search: cervical dystonia ===\")",
+      "Bash(curl -s \"http://localhost:8000/api/v1/search/drug?name=Botox\" | python3 -c \"import json,sys; d=json.load(sys.stdin); [print(f'  {r[\\\"payer_name\\\"]} | {r[\\\"drug_name\\\"]} | {r[\\\"indication_name\\\"]} | {r[\\\"coverage_status\\\"]} | PA:{r[\\\"pa_required\\\"]}') for r in d[:5]]; print(f'  ... {len(d)} total results')\")",
       "Bash(curl -s \"http://localhost:8000/api/v1/search/indication?name=cervical+dystonia\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f''''  {r[\"\"payer_name\"\"]} | {r[\"\"drug_name\"\"]} | {r[\"\"coverage_status\"\"]}''''\\) for r in d]\" __NEW_LINE_91bdc6d72bdf0731__ echo \"\" echo \"=== Payers ===\")",
-      "Bash(curl -s \"http://localhost:8000/api/v1/search/payers\" __NEW_LINE_91bdc6d72bdf0731__ echo \"\" echo \"=== PA requirements: Myobloc ===\")",
+      "Bash(curl -s \"http://localhost:8000/api/v1/search/indication?name=cervical+dystonia\" | python3 -c \"import json,sys; d=json.load(sys.stdin); [print(f'  {r[\\\"payer_name\\\"]} | {r[\\\"drug_name\\\"]} | {r[\\\"coverage_status\\\"]}') for r in d]\")",
+      "Bash(curl -s \"http://localhost:8000/api/v1/search/payers\")",
       "Bash(curl -s \"http://localhost:8000/api/v1/search/pa-requirements?drug=Myobloc\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f''''  {r[\"\"payer_name\"\"]} | {r[\"\"indication_name\"\"]} | PA:{r[\"\"pa_required\"\"]} | steps:{r[\"\"step_therapy\"\"]}''''\\) for r in d[:5]]\" __NEW_LINE_91bdc6d72bdf0731__ echo \"\" echo \"=== Compare across payers: Daxxify ===\")",
+      "Bash(curl -s \"http://localhost:8000/api/v1/search/pa-requirements?drug=Myobloc\" | python3 -c \"import json,sys; d=json.load(sys.stdin); [print(f'  {r[\\\"payer_name\\\"]} | {r[\\\"indication_name\\\"]} | PA:{r[\\\"pa_required\\\"]} | steps:{r[\\\"step_therapy\\\"]}') for r in d[:5]]\")",
       "Bash(curl -s \"http://localhost:8000/api/v1/search/compare?drug=Daxxify\")",
-      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(f''''  {r[\"\"payer_name\"\"]} | {r[\"\"drug_name\"\"]} | {r[\"\"coverage_status\"\"]}''''\\) for r in d]\")",
+      "Bash(curl -s \"http://localhost:8000/api/v1/search/compare?drug=Daxxify\" | python3 -c \"import json,sys; d=json.load(sys.stdin); [print(f'  {r[\\\"payer_name\\\"]} | {r[\\\"drug_name\\\"]} | {r[\\\"coverage_status\\\"]}') for r in d]\")",
       "WebFetch(domain:raw.githubusercontent.com)",
       "WebFetch(domain:github.com)"
     ]
