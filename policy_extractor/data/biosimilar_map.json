@@ -1,0 +1,66 @@
+{
+  "adalimumab biosimilars": {
+    "reference_product": "Humira",
+    "biosimilars": [
+      "Hadlima", "Hyrimoz", "Cyltezo", "Abrilada", "Yusimry",
+      "Hulio", "Idacio", "Amjevita", "Simlandi"
+    ],
+    "suffixes": ["-bwwd", "-adaz", "-aacf", "-afzb", "-aqvh", "-fkjp", "-ibi", "-atto", "-znhc"]
+  },
+  "infliximab biosimilars": {
+    "reference_product": "Remicade",
+    "biosimilars": [
+      "Inflectra", "Renflexis", "Ixifi", "Avsola", "Zymfentra"
+    ],
+    "suffixes": ["-dyyb", "-abda", "-qbtx", "-axxq", "-izy"]
+  },
+  "filgrastim biosimilars": {
+    "reference_product": "Neupogen",
+    "biosimilars": [
+      "Zarxio", "Nivestym", "Releuko"
+    ],
+    "suffixes": ["-sndz", "-fpwp", "-ez"]
+  },
+  "pegfilgrastim biosimilars": {
+    "reference_product": "Neulasta",
+    "biosimilars": [
+      "Ziextenzo", "Fylnetra", "Stimufend", "Nyvepria", "Udenyca", "Fulphila"
+    ],
+    "suffixes": ["-bmez", "-pbbk", "-fpgk", "-onpq", "-cbqv", "-mbbj"]
+  },
+  "bevacizumab biosimilars": {
+    "reference_product": "Avastin",
+    "biosimilars": [
+      "Mvasi", "Zirabev", "Alymsys", "Vegzelma", "Oyavas"
+    ],
+    "suffixes": ["-awwb", "-bvzr", "-myl", "-adce", "-bvzr"]
+  },
+  "trastuzumab biosimilars": {
+    "reference_product": "Herceptin",
+    "biosimilars": [
+      "Herzuma", "Ogivri", "Ontruzant", "Trazimera", "Kanjinti"
+    ],
+    "suffixes": ["-pkrb", "-dkst", "-twyp", "-qyyp", "-anns"]
+  },
+  "rituximab biosimilars": {
+    "reference_product": "Rituxan",
+    "biosimilars": [
+      "Truxima", "Ruxience", "Riabni"
+    ],
+    "suffixes": ["-qbtx", "-pvvr", "-arrx"]
+  },
+  "epoetin alfa biosimilars": {
+    "reference_product": "Epogen",
+    "biosimilars": [
+      "Retacrit"
+    ],
+    "suffixes": ["-epbx"]
+  },
+  "etanercept biosimilars": {
+    "reference_product": "Enbrel",
+    "biosimilars": [
+      "Eticovo", "Erelzi"
+    ],
+    "suffixes": ["-ykro", "-szzs"]
+  }
+}
