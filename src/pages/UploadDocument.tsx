@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Bell,
@@ -17,19 +17,239 @@ import logo from "/src/components/logo.svg";
 import "../styles/UploadDocument.css";
 
 const BRAND_NAME = "Drug Coverage Hub";
+const RECENT_UPLOADS_STORAGE_KEY = "drugCoverageHub.recentUploads";
+const RECENT_ACTIVITIES_STORAGE_KEY = "drugCoverageHub.recentActivities";
+
+interface UploadRecord {
+  id: number;
+  name: string;
+  payer: string;
+  uploadDate: string;
+  status: "Completed" | "Processing..." | "Failed";
+}
+
+interface ActivityRecord {
+  id: number;
+  text: string;
+  type: "amber" | "blue" | "green" | "orange" | "red";
+}
+
+const defaultRecentUploads: UploadRecord[] = [
+  {
+    id: 1,
+    name: "BCBS Policy 2026",
+    payer: "Blue Cross Blue Shield",
+    uploadDate: "March 15, 2026",
+    status: "Failed",
+  },
+  {
+    id: 2,
+    name: "UHC Policy Q2 2026",
+    payer: "UnitedHealthcare",
+    uploadDate: "April 5, 2026",
+    status: "Completed",
+  },
+  {
+    id: 3,
+    name: "Aetna Policy Q1 2026",
+    payer: "Aetna",
+    uploadDate: "March 28, 2026",
+    status: "Processing...",
+  },
+];
+
+const defaultRecentActivities: ActivityRecord[] = [
+  {
+    id: 1,
+    text: 'Uploading "Aetna Policy Q2 2026" - Just now',
+    type: "amber",
+  },
+  {
+    id: 2,
+    text: 'Admin approved "UHC Policy Q2 2026" - 2 hours ago',
+    type: "blue",
+  },
+  {
+    id: 3,
+    text: "System extracted new drug: Daxxify - 1 day ago",
+    type: "green",
+  },
+  {
+    id: 4,
+    text: 'Review needed for "BCBS Policy 2026" - 3 days ago',
+    type: "orange",
+  },
+  {
+    id: 5,
+    text: "Document upload failed - Aetna Policy Q1 2026 - 5 days ago",
+    type: "red",
+  },
+];
+
+const parseStoredList = <T,>(storageKey: string, fallbackValue: T): T => {
+  try {
+    const raw = localStorage.getItem(storageKey);
+    if (!raw) {
+      return fallbackValue;
+    }
+    const parsed = JSON.parse(raw) as T;
+    return parsed;
+  } catch {
+    return fallbackValue;
+  }
+};
 
 const UploadDocumentPage: React.FC = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const uploadTimerRef = useRef<number | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedFileName, setSelectedFileName] = useState("No file selected");
+  const [selectedPayer, setSelectedPayer] = useState("UnitedHealthcare");
+  const [uploadFeedback, setUploadFeedback] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [activeUploadId, setActiveUploadId] = useState<number | null>(null);
+  const [activeUploadFileName, setActiveUploadFileName] = useState("No active upload");
+  const [recentUploads, setRecentUploads] = useState<UploadRecord[]>(() =>
+    parseStoredList<UploadRecord[]>(RECENT_UPLOADS_STORAGE_KEY, defaultRecentUploads)
+  );
+  const [recentActivities, setRecentActivities] = useState<ActivityRecord[]>(() =>
+    parseStoredList<ActivityRecord[]>(RECENT_ACTIVITIES_STORAGE_KEY, defaultRecentActivities)
+  );
+
+  useEffect(() => {
+    return () => {
+      if (uploadTimerRef.current !== null) {
+        window.clearInterval(uploadTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(RECENT_UPLOADS_STORAGE_KEY, JSON.stringify(recentUploads));
+  }, [recentUploads]);
+
+  useEffect(() => {
+    localStorage.setItem(RECENT_ACTIVITIES_STORAGE_KEY, JSON.stringify(recentActivities));
+  }, [recentActivities]);
 
   const openFilePicker = () => {
     fileInputRef.current?.click();
   };
 
+  const getFormattedDate = () => {
+    return new Intl.DateTimeFormat("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }).format(new Date());
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    setSelectedFile(file ?? null);
     setSelectedFileName(file ? file.name : "No file selected");
+    setUploadFeedback("");
+  };
+
+  const handleUploadDocument = () => {
+    if (!selectedFile) {
+      setUploadFeedback("Please select a PDF file first.");
+      openFilePicker();
+      return;
+    }
+
+    const newUploadId = Date.now();
+    const uploadDate = getFormattedDate();
+
+    const newUpload: UploadRecord = {
+      id: newUploadId,
+      name: selectedFile.name,
+      payer: selectedPayer,
+      uploadDate,
+      status: "Processing...",
+    };
+
+    setRecentUploads((current) => [newUpload, ...current]);
+    setRecentActivities((current) => [
+      {
+        id: Date.now() + 1,
+        text: `Uploading \"${selectedFile.name}\" - Just now`,
+        type: "amber",
+      },
+      ...current,
+    ]);
+    setUploadFeedback("Upload started.");
+    setUploadProgress(0);
+    setActiveUploadId(newUploadId);
+    setActiveUploadFileName(selectedFile.name);
+
+    if (uploadTimerRef.current !== null) {
+      window.clearInterval(uploadTimerRef.current);
+    }
+
+    uploadTimerRef.current = window.setInterval(() => {
+      setUploadProgress((currentProgress) => {
+        const nextProgress = Math.min(currentProgress + 20, 100);
+
+        if (nextProgress === 100) {
+          if (uploadTimerRef.current !== null) {
+            window.clearInterval(uploadTimerRef.current);
+            uploadTimerRef.current = null;
+          }
+
+          setRecentUploads((currentUploads) =>
+            currentUploads.map((item) =>
+              item.id === newUploadId ? { ...item, status: "Completed" } : item
+            )
+          );
+
+          setRecentActivities((current) => [
+            {
+              id: Date.now() + 2,
+              text: `Document uploaded successfully - ${selectedFile.name} - Just now`,
+              type: "green",
+            },
+            ...current,
+          ]);
+          setUploadFeedback("Upload complete.");
+          setSelectedFile(null);
+          setSelectedFileName("No file selected");
+          setActiveUploadId(null);
+        }
+
+        return nextProgress;
+      });
+    }, 350);
+  };
+
+  const handleCancelUpload = () => {
+    if (activeUploadId === null) {
+      return;
+    }
+
+    if (uploadTimerRef.current !== null) {
+      window.clearInterval(uploadTimerRef.current);
+      uploadTimerRef.current = null;
+    }
+
+    setRecentUploads((currentUploads) =>
+      currentUploads.map((item) =>
+        item.id === activeUploadId ? { ...item, status: "Failed" } : item
+      )
+    );
+    setRecentActivities((current) => [
+      {
+        id: Date.now() + 3,
+        text: `Upload cancelled - ${activeUploadFileName} - Just now`,
+        type: "red",
+      },
+      ...current,
+    ]);
+    setUploadFeedback("Upload cancelled.");
+    setUploadProgress(0);
+    setActiveUploadId(null);
+    setActiveUploadFileName("No active upload");
   };
 
   return (
@@ -95,7 +315,11 @@ const UploadDocumentPage: React.FC = () => {
                   <div className="form-grid three-columns">
                     <div className="field">
                       <label>Payer</label>
-                      <select className="input select-dropdown">
+                      <select
+                        className="input select-dropdown"
+                        value={selectedPayer}
+                        onChange={(event) => setSelectedPayer(event.target.value)}
+                      >
                         <option>UnitedHealthcare</option>
                         <option>Aetna</option>
                         <option>Blue Cross Blue Shield</option>
@@ -194,10 +418,11 @@ const UploadDocumentPage: React.FC = () => {
 
                   <div className="form-footer">
                     <span className="recent-upload-text">Recent Uploads</span>
-                    <button className="primary-btn" type="button" onClick={openFilePicker}>
+                    <button className="primary-btn" type="button" onClick={handleUploadDocument}>
                       Upload Document
                     </button>
                   </div>
+                  {uploadFeedback && <p className="upload-feedback">{uploadFeedback}</p>}
                 </div>
 
                 <div className="recent-table-wrap">
@@ -214,30 +439,26 @@ const UploadDocumentPage: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
-                          <td className="strong-cell">BCBS Policy 2026</td>
-                          <td>Blue Cross Blue Shield</td>
-                          <td>March 15, 2026</td>
-                          <td>
-                            <span className="status-badge failed">Failed</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="strong-cell">UHC Policy Q2 2026</td>
-                          <td>UnitedHealthcare</td>
-                          <td>April 5, 2026</td>
-                          <td>
-                            <span className="status-badge completed">Completed</span>
-                          </td>
-                        </tr>
-                        <tr>
-                          <td className="strong-cell">Aetna Policy Q1 2026</td>
-                          <td>Aetna</td>
-                          <td>March 28, 2026</td>
-                          <td>
-                            <span className="status-badge processing">Processing...</span>
-                          </td>
-                        </tr>
+                        {recentUploads.map((row) => (
+                          <tr key={row.id}>
+                            <td className="strong-cell">{row.name}</td>
+                            <td>{row.payer}</td>
+                            <td>{row.uploadDate}</td>
+                            <td>
+                              <span
+                                className={`status-badge ${
+                                  row.status === "Completed"
+                                    ? "completed"
+                                    : row.status === "Processing..."
+                                      ? "processing"
+                                      : "failed"
+                                }`}
+                              >
+                                {row.status}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
                   </div>
@@ -250,16 +471,18 @@ const UploadDocumentPage: React.FC = () => {
 
                   <div className="progress-box">
                     <div className="uploading-file">
-                      Uploading: <strong>Aetna_Policy_Q2_2026.pdf</strong>
+                      Uploading: <strong>{activeUploadFileName}</strong>
                     </div>
 
                     <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: "40%" }} />
+                      <div className="progress-fill" style={{ width: `${uploadProgress}%` }} />
                     </div>
 
                     <div className="progress-footer">
-                      <span>Progress: 40%</span>
-                      <button className="outline-btn" type="button">Cancel Upload</button>
+                      <span>Progress: {uploadProgress}%</span>
+                      <button className="outline-btn" type="button" onClick={handleCancelUpload}>
+                        Cancel Upload
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -268,40 +491,30 @@ const UploadDocumentPage: React.FC = () => {
                   <h3>Recent Activity</h3>
 
                   <div className="activity-list">
-                    <div className="activity-item">
-                      <Circle size={14} className="activity-icon amber" fill="currentColor" />
-                      <span>
-                        Uploading <strong>&quot;Aetna Policy Q2 2026&quot;</strong> - Just now
-                      </span>
-                    </div>
-
-                    <div className="activity-item">
-                      <CheckCircle2 size={16} className="activity-icon blue" />
-                      <span>
-                        Admin approved <strong>&quot;UHC Policy Q2 2026&quot;</strong> - 2 hours ago
-                      </span>
-                    </div>
-
-                    <div className="activity-item">
-                      <CheckCircle2 size={16} className="activity-icon green" />
-                      <span>
-                        System extracted new drug: <strong>Daxxify</strong> - 1 day ago
-                      </span>
-                    </div>
-
-                    <div className="activity-item">
-                      <Clock3 size={16} className="activity-icon orange" />
-                      <span>
-                        Review needed for <strong>&quot;BCBS Policy 2026&quot;</strong> - 3 days ago
-                      </span>
-                    </div>
-
-                    <div className="activity-item">
-                      <XCircle size={16} className="activity-icon red" />
-                      <span>
-                        Document upload failed - <strong>Aetna Policy Q1 2026</strong> - 5 days ago
-                      </span>
-                    </div>
+                    {recentActivities.map((activity) => (
+                      <div className="activity-item" key={activity.id}>
+                        {activity.type === "amber" && (
+                          <Circle
+                            size={14}
+                            className="activity-icon amber"
+                            fill="currentColor"
+                          />
+                        )}
+                        {activity.type === "blue" && (
+                          <CheckCircle2 size={16} className="activity-icon blue" />
+                        )}
+                        {activity.type === "green" && (
+                          <CheckCircle2 size={16} className="activity-icon green" />
+                        )}
+                        {activity.type === "orange" && (
+                          <Clock3 size={16} className="activity-icon orange" />
+                        )}
+                        {activity.type === "red" && (
+                          <XCircle size={16} className="activity-icon red" />
+                        )}
+                        <span>{activity.text}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

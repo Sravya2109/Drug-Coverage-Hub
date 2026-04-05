@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import logo from "/src/components/logo.svg";
 
@@ -7,7 +7,6 @@ import {
   ChevronDown,
   FileText,
   Pill,
-  ShieldCheck,
   Settings,
   Home,
   Search,
@@ -20,9 +19,113 @@ import {
 } from "lucide-react";
 
 const BRAND_NAME = "Drug Coverage Hub";
+const DASHBOARD_UPLOADS_STORAGE_KEY = "drugCoverageHub.recentUploads";
+const DASHBOARD_ACTIVITIES_STORAGE_KEY = "drugCoverageHub.recentActivities";
+
+interface UploadRecord {
+  id: number;
+  name: string;
+  payer: string;
+  uploadDate: string;
+  status: "Completed" | "Processing..." | "Failed";
+}
+
+interface ActivityRecord {
+  id: number;
+  text: string;
+  type: "amber" | "blue" | "green" | "orange" | "red";
+}
+
+const fallbackUploads: UploadRecord[] = [
+  {
+    id: 1,
+    name: "UHC Policy Q2 2026",
+    payer: "UnitedHealthcare",
+    uploadDate: "April 5, 2026",
+    status: "Completed",
+  },
+  {
+    id: 2,
+    name: "Aetna Policy Q1 2026",
+    payer: "Aetna",
+    uploadDate: "March 28, 2026",
+    status: "Processing...",
+  },
+  {
+    id: 3,
+    name: "BCBS Policy 2026",
+    payer: "Blue Cross Blue Shield",
+    uploadDate: "March 15, 2026",
+    status: "Failed",
+  },
+];
+
+const fallbackActivities: ActivityRecord[] = [
+  {
+    id: 1,
+    text: 'Admin approved "UHC Policy Q2 2026" - 2 hours ago',
+    type: "blue",
+  },
+  {
+    id: 2,
+    text: "System extracted new drug: Daxxify - 1 day ago",
+    type: "green",
+  },
+  {
+    id: 3,
+    text: 'Review needed for "BCBS Policy 2026" - 3 days ago',
+    type: "orange",
+  },
+  {
+    id: 4,
+    text: "Document upload failed - Aetna Policy Q1 2026 - 5 days ago",
+    type: "red",
+  },
+];
 
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
+  const [latestUploads, setLatestUploads] = useState<UploadRecord[]>(fallbackUploads);
+  const [recentActivity, setRecentActivity] = useState<ActivityRecord[]>(fallbackActivities);
+
+  useEffect(() => {
+    const loadDashboardData = () => {
+      try {
+        const savedUploads = localStorage.getItem(DASHBOARD_UPLOADS_STORAGE_KEY);
+        const savedActivities = localStorage.getItem(DASHBOARD_ACTIVITIES_STORAGE_KEY);
+
+        if (savedUploads) {
+          const parsedUploads = JSON.parse(savedUploads) as UploadRecord[];
+          if (Array.isArray(parsedUploads) && parsedUploads.length > 0) {
+            setLatestUploads(parsedUploads);
+          }
+        }
+
+        if (savedActivities) {
+          const parsedActivities = JSON.parse(savedActivities) as ActivityRecord[];
+          if (Array.isArray(parsedActivities) && parsedActivities.length > 0) {
+            setRecentActivity(parsedActivities);
+          }
+        }
+      } catch {
+        setLatestUploads(fallbackUploads);
+        setRecentActivity(fallbackActivities);
+      }
+    };
+
+    loadDashboardData();
+    window.addEventListener("storage", loadDashboardData);
+    window.addEventListener("focus", loadDashboardData);
+
+    return () => {
+      window.removeEventListener("storage", loadDashboardData);
+      window.removeEventListener("focus", loadDashboardData);
+    };
+  }, []);
+
+  const latestUploadsToShow = useMemo(() => latestUploads.slice(0, 5), [latestUploads]);
+  const recentActivityToShow = useMemo(() => recentActivity.slice(0, 5), [recentActivity]);
+
   return (
     <div className="upload-layout">
       {/* Header with brand */}
@@ -142,30 +245,26 @@ const AdminDashboard: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>UHC Policy Q2 2026</td>
-                    <td>UnitedHealthcare</td>
-                    <td>April 5, 2026</td>
-                    <td>
-                      <span className="status completed">Completed</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Aetna Policy Q1 2026</td>
-                    <td>Aetna</td>
-                    <td>March 28, 2026</td>
-                    <td>
-                      <span className="status processing">Processing...</span>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>BCBS Policy 2026</td>
-                    <td>Blue Cross Blue Shield</td>
-                    <td>March 15, 2026</td>
-                    <td>
-                      <span className="status failed">Failed</span>
-                    </td>
-                  </tr>
+                  {latestUploadsToShow.map((upload) => (
+                    <tr key={upload.id}>
+                      <td>{upload.name}</td>
+                      <td>{upload.payer}</td>
+                      <td>{upload.uploadDate}</td>
+                      <td>
+                        <span
+                          className={`status ${
+                            upload.status === "Completed"
+                              ? "completed"
+                              : upload.status === "Processing..."
+                                ? "processing"
+                                : "failed"
+                          }`}
+                        >
+                          {upload.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -198,19 +297,9 @@ const AdminDashboard: React.FC = () => {
                   <span>Upload Document</span>
                 </button>
 
-                <button className="action-card">
+                <button className="action-card" onClick={() => navigate('/drug-search')}>
                   <FolderCog size={34} />
                   <span>Manage Drugs</span>
-                </button>
-
-                <button className="action-card">
-                  <Search size={34} />
-                  <span>Review Extracted Data</span>
-                </button>
-
-                <button className="action-card">
-                  <ShieldCheck size={34} />
-                  <span>View Audit Logs</span>
                 </button>
               </div>
             </div>
@@ -221,37 +310,26 @@ const AdminDashboard: React.FC = () => {
               </div>
 
               <div className="activity-list">
-                <div className="activity-item">
-                  <CheckCircle2 className="activity-icon success" size={18} />
-                  <span>
-                    Admin approved <strong>"UHC Policy Q2 2026"</strong> - 2
-                    hours ago
-                  </span>
-                </div>
-
-                <div className="activity-item">
-                  <CheckCircle2 className="activity-icon greenish" size={18} />
-                  <span>
-                    System extracted new drug: <strong>Daxxify</strong> - 1 day
-                    ago
-                  </span>
-                </div>
-
-                <div className="activity-item">
-                  <CircleAlert className="activity-icon warning" size={18} />
-                  <span>
-                    Review needed for <strong>"BCBS Policy 2026"</strong> - 3
-                    days ago
-                  </span>
-                </div>
-
-                <div className="activity-item">
-                  <XCircle className="activity-icon danger" size={18} />
-                  <span>
-                    Document upload failed -{" "}
-                    <strong>Aetna Policy Q1 2026</strong> - 5 days ago
-                  </span>
-                </div>
+                {recentActivityToShow.map((activity) => (
+                  <div className="activity-item" key={activity.id}>
+                    {activity.type === "amber" && (
+                      <CircleAlert className="activity-icon warning" size={18} />
+                    )}
+                    {activity.type === "blue" && (
+                      <CheckCircle2 className="activity-icon success" size={18} />
+                    )}
+                    {activity.type === "green" && (
+                      <CheckCircle2 className="activity-icon greenish" size={18} />
+                    )}
+                    {activity.type === "orange" && (
+                      <CircleAlert className="activity-icon warning" size={18} />
+                    )}
+                    {activity.type === "red" && (
+                      <XCircle className="activity-icon danger" size={18} />
+                    )}
+                    <span>{activity.text}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
