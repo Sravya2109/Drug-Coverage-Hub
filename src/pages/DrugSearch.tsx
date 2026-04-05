@@ -147,7 +147,7 @@ const DrugSearch: React.FC = () => {
               <span>Drug Search</span>
             </button>
 
-            <button className="nav-item">
+            <button className="nav-item" onClick={() => navigate('/settings')}>
               <Settings size={18} />
               <span>Settings</span>
             </button>

@@ -66,7 +66,7 @@ const AdminDashboard: React.FC = () => {
               <Pill size={18} />
               <span>Drug Search</span>
             </button>
-            <button className="nav-item">
+            <button className="nav-item" onClick={() => navigate('/settings')}>
               <Settings size={18} />
               <span>Settings</span>
             </button>
