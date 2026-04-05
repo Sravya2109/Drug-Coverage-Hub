@@ -92,9 +92,7 @@ source .venv/bin/activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Create your .env file from the example and add your API key
-cp .env.example .env
-# Edit .env and set ANTHROPIC_API_KEY=your_key_here
+# Set your Anthropic API key
 ```
 
 ---
@@ -221,7 +219,7 @@ curl -X POST http://localhost:8000/api/v1/extract/validate-only \
 
 ## Configuration
 
-Settings are loaded from a `.env` file in the project root (see `.env.example`). All values can also be set as environment variables directly.
+All settings can be overridden via environment variables:
 
 | Variable | Default | Description |
 |---|---|---|
@@ -271,3 +269,7 @@ Settings are loaded from a `.env` file in the project root (see `.env.example`).
 - Consistent schema output across all document types
 - No fabricated drugs, indications, or coverage statuses
 - Validation errors are explicit and actionable
+
+
+
+claude --resume "medical-policy-extraction-plan" 
