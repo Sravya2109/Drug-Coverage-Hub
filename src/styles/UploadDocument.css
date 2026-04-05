@@ -348,6 +348,13 @@ select {
   justify-content: space-between;
 }
 
+.upload-feedback {
+  margin: 8px 2px 0;
+  font-size: 13px;
+  color: #2f69b3;
+  font-weight: 600;
+}
+
 .recent-upload-text {
   font-size: 13px;
   color: #627898;
